@@ -15,7 +15,7 @@ for i in range(len(my_queries)):
 
     docs = list(map(lambda e: e[0], result))[:30]
     query = [my_queries_id[i]] * len(docs)
-    rel2 = pd.DataFrame({query[0]: query[1:], docs[0]: docs[1:], get_rel(query_id, doc_id)})
+    rel2 = pd.DataFrame({query[0]: query[1:], docs[0]: docs[1:]})
 
-    file = open("rels2.txt", "a")
+    file = open("rels3.txt", "a")
     file.write(rel2.to_csv(sep="\t", index=None))
