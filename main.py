@@ -40,7 +40,14 @@ for i in range(len(my_queries)):
     print(i)
     print(rappels)
     print(precisions)
-    rel2 = pd.DataFrame({query[0]: query[1:], docs[0]: docs[1:], rels[0]: rels[1:], rappels[0]: rappels[1:], precisions[0]: precisions[1:]})
+    print(query)
 
     file = open("rels3.txt", "a")
-    file.write(rel2.to_csv(sep="\t", index=None))
+    # rel2 = pd.DataFrame({query[0]: query[1:], docs[0]: docs[1:], rels[0]: rels[1:], rappels[0]: rappels[1:], precisions[0]: precisions[1:]})
+
+    for line_i in range(n_selected):
+        print(f"{query[i]}\t{docs[i]}\t{rels[i]}\t{rappels[i]}\t{precisions[i]}\n")
+        file.write(".d\t.s\t.d\t.f\t.f\n".format(query[i], docs[i], rels[i], rappels[i], precisions[i]))
+
+    # file.write(rel2.to_csv(sep="\t", index=None))
+    exit()
