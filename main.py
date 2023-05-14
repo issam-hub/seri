@@ -1,11 +1,21 @@
 import pandas as pd
-# import numpy as np
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.metrics.pairwise import cosine_similarity
+import numpy as np
+from functions import *
 
-tfidf = TfidfVectorizer(stop_words="english", analyzer="word")
+queries = pd.read_table("my-dataset/test/queries.txt")
 
-removedWords = tfidf.build_analyzer()
+my_queries = list(queries["query_text"])
+my_queries_id = list(queries["query_id"])
+# my_queries = ["Why doesn't the water fall off  earth if it's round?"]
+# my_queries_id = [714612]
 
-result = removedWords("hello world from down street yeah baby that's what i'm talking about here right now hello")
+for i in range(len(my_queries)):
+    query = my_queries[i]
+    result = retrieval(query)
 
+    docs = list(map(lambda e: e[0], result))[:30]
+    query = [my_queries_id[i]] * len(docs)
+    rel2 = pd.DataFrame({query[0]: query[1:], docs[0]: docs[1:], get_rel(query_id, doc_id)})
+
+    file = open("rels2.txt", "a")
+    file.write(rel2.to_csv(sep="\t", index=None))
