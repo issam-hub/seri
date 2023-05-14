@@ -33,4 +33,6 @@ def get_rel(query_id: int, doc_id):
 
     arr = qrels[qrels["query_id"] == query_id]
 
-    return arr[arr["doc_id"] == doc_id]["rel"].values
+    v = arr[arr["doc_id"] == doc_id]["rel"].values
+
+    return v or [1]

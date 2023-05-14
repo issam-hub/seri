@@ -17,12 +17,9 @@ for i in range(len(my_queries)):
     query = [my_queries_id[i]] * len(docs)
 
     rels = []
-    for i in range(len(docs)):
-        rels.append(get_rel(query[i], docs[i]))
 
-    rels = list(map(lambda e: e[0], rels))
-    print(rels)
-    exit()
+    for i in range(len(docs)):
+        rels.append(get_rel(query[i], docs[i])[0])
 
     rel2 = pd.DataFrame({query[0]: query[1:], docs[0]: docs[1:], rels[0]: rels[1:]})
 
