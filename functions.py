@@ -3,6 +3,15 @@ import pandas as pd
 import numpy as np
 from sklearn.feature_extraction.text import TfidfVectorizer
 
+import numpy as np
+from numpy.linalg import norm
+
+
+def cosine_similarity(A: list, B: list):
+    A = np.array(A)
+    B = np.array(B)
+    return np.dot(A, B)/(norm(A)*norm(B))
+
 
 def retrieval(query):
     df = pd.read_table("my-dataset/collection.tsv")
@@ -28,8 +37,10 @@ def retrieval(query):
         if doc_feature_names.__contains__(query_word):
             arr[doc_feature_names.index(query_word)] = query_tfidfshow[query_word][0]
 
-    query_matrix = [arr]*len(df['doc_text'])
+    query_matrix = arr
 
+    cos_sim = []
+    
     cos_sim = cosine_similarity(query_matrix, tfidf_matrix)
 
     result = {df["doc_id"][i]: cos_sim[0][i] for i in range(len(cos_sim[0]))}
