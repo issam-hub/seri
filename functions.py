@@ -31,6 +31,6 @@ def retrieval(query):
 def get_rel(query_id: int, doc_id):
     qrels = pd.read_table("my-dataset/test/qrels")
 
-    arr = rels[rels["query_id"] == query_id]
+    arr = qrels[qrels["query_id"] == query_id]
 
     return arr[arr["doc_id"] == doc_id]["rel"]
