@@ -20,7 +20,8 @@ for i in range(len(my_queries)):
     for i in range(len(docs)):
         rels.append(get_rel(query[i], docs[i]))
 
-    print(rels[0].to_numeric())
+    rels = list(map(lambda e: e[0], rels))
+    print(rels)
     exit()
 
     rel2 = pd.DataFrame({query[0]: query[1:], docs[0]: docs[1:], rels[0]: rels[1:]})
