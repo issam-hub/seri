@@ -1,4 +1,4 @@
-from sklearn.metrics.pairwise import linear_kernel, cosine_similarity
+from sklearn.metrics.pairwise import linear_kernel, euclidean_distances
 import pandas as pd
 import numpy as np
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -9,7 +9,6 @@ def interpolation(rappels: list, precisions: list) -> list:
     precision_i = []
 
     for rj in [0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1]:
-        print(rj)
         rappel_after_rj = []
         precision_after_rj = []
         for i in range(len(rappels)):
@@ -18,7 +17,6 @@ def interpolation(rappels: list, precisions: list) -> list:
             if (rappel >= rj):
                 rappel_after_rj.append(rappel)
                 precision_after_rj.append(precision)
-                print(precision_after_rj)
         if (len(precision_after_rj) > 0):
             precision_i.append(max(precision_after_rj))
         else:
@@ -42,11 +40,14 @@ def retrieval(query):
     queryTFIDF = TfidfVectorizer().fit(doc_feature_names)
     queryTFIDF = queryTFIDF.transform([query])
 
-    cos_sim = cosine_similarity(queryTFIDF, tfidf_matrix).flatten()
+    # cos_sim = linear_kernel(queryTFIDF, tfidf_matrix).flatten()
+    # cos_sim = euclidean_distances(queryTFIDF, tfidf_matrix).flatten()
 
     result = {df["doc_id"][i]: cos_sim[i] for i in range(len(cos_sim))}
 
     final_result = sorted(result.items(), key=lambda e: e[1], reverse=True)
+    # for euclidean distance similarity
+    # final_result = sorted(result.items(), key=lambda e: e[1])
 
     return final_result
 
@@ -62,6 +63,8 @@ def get_rel(query_id: int, doc_id):
 
 
 def evaluation_file():
+    print("--- calculating Our SRI performance ---")
+
     n_selected = 30
 
     qrels = pd.read_table("my-dataset/test/qrels")
@@ -71,6 +74,10 @@ def evaluation_file():
     my_queries = list(queries["query_text"])
     my_queries_id = list(queries["query_id"])
 
+    file = open("rels3.txt", "w")
+    file.write("query_id\tdoc_id\trel\trappel\tprecision\n")
+    # file.close()
+    lines = []
     for i in range(len(my_queries)):
         query = my_queries[i]
         query_id = my_queries_id[i]
@@ -108,19 +115,23 @@ def evaluation_file():
                 rappels.append("")
                 precisions.append("")
 
-        plt.plot([0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1], interpolation(plt_rappels, plt_precisions))
-        plt.xlabel("rappel")
-        plt.ylabel("precision")
+        # plt.plot([0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1], interpolation(plt_rappels, plt_precisions))
+        # plt.xlabel("rappel")
+        # plt.ylabel("precision")
         # plt.show()
 
-        file = open("rels3.txt", "a")
-        rel2 = pd.DataFrame({query[0]: query[1:], docs[0]: docs[1:], rels[0]: rels[1:], rappels[0]: rappels[1:], precisions[0]: precisions[1:]})
+        # file = open("rels3.txt", "a")
+        # rel2 = pd.DataFrame({query[0]: query[1:], docs[0]: docs[1:], rels[0]: rels[1:], rappels[0]: rappels[1:], precisions[0]: precisions[1:]})
 
         for line_i in range(n_selected):
-            file.write("{}\t{}\t{}\t{}\t{}\n".format(query[line_i], docs[line_i], rels[line_i], rappels[line_i], precisions[line_i]))
+            lines.append("{}\t{}\t{}\t{}\t{}\n".format(query[line_i], docs[line_i], rels[line_i], rappels[line_i], precisions[line_i]))
+
+        print("query", query_id, "done")
+    file.writelines(lines)
 
 
 def evaluation_SRI_reference_file():
+    print("--- calculating Reference SRI performance ---")
     n_selected = 30
 
     qrels = pd.read_table("my-dataset/test/qrels")
@@ -129,8 +140,14 @@ def evaluation_SRI_reference_file():
 
     my_queries = list(queries["query_text"])
     my_queries_id = list(queries["query_id"])
-    print(len(my_queries))
-    print(len(my_queries_id))
+    # print(len(my_queries))
+    # print(len(my_queries_id))
+
+    file = open("rels_SRI.txt", "w")
+    file.write("query_id\tdoc_id\trel\trappel\tprecision\n")
+    # file.close()
+
+    lines = []
 
     for i in range(len(my_queries)):
         query = my_queries[i]
@@ -168,13 +185,29 @@ def evaluation_SRI_reference_file():
                 rappels.append("")
                 precisions.append("")
 
-        plt.plot([0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1], interpolation(plt_rappels, plt_precisions))
-        plt.xlabel("rappel")
-        plt.ylabel("precision")
+        # plt.plot([0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1], interpolation(plt_rappels, plt_precisions))
+        # plt.xlabel("rappel")
+        # plt.ylabel("precision")
         # plt.show()
 
-        file = open("rels_SRI.txt", "a")
+        # file = open("rels_SRI.txt", "a")
         # rel2 = pd.DataFrame({query[0]: query[1:], docs[0]: docs[1:], rels[0]: rels[1:], rappels[0]: rappels[1:], precisions[0]: precisions[1:]})
-        print(len(docs))
+        # print(len(docs))
         for line_i in range(len(docs)):
-            file.write("{}\t{}\t{}\t{}\t{}\n".format(query[line_i], docs[line_i], rels[line_i], rappels[line_i], precisions[line_i]))
+            lines.append("{}\t{}\t{}\t{}\t{}\n".format(query[line_i], docs[line_i], rels[line_i], rappels[line_i], precisions[line_i]))
+
+        print("query", query_id, "done")
+
+    file.writelines(lines)
+
+
+def compare_preformance(title, precisions1: list, precisions2: list):
+    rj = [0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1]
+    plt.plot(rj, precisions1, label="our_SRI")
+    plt.plot(rj, precisions2, label="reference_SRI")
+    plt.xlabel("rappel")
+    plt.ylabel("precision")
+
+    plt.title(title)
+    plt.legend()
+    plt.show()

@@ -1,4 +1,4 @@
-query_id    doc_id  rel rappel  precision
+query_id	doc_id	rel	rappel	precision
 3990512	3990512_1	4	0.09090909090909091	1.0
 3990512	2036065_1	2		
 3990512	3265991_12	2		
